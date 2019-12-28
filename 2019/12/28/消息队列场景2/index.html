@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>消息队列场景2 | 小小程序眼</title>
+  <meta name="keywords" content=" 基础 ">
+  <meta name="description" content="消息队列场景2 | 小小程序眼">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="拉取red5docker镜像1docker pull mondain&#x2F;red5 配置挂在目录创建目录&#x2F;mnt&#x2F;red5_data&#x2F;webapps，启动docker并将docker中opt&#x2F;red5&#x2F;webapps目录挂载在这里。 开启服务器端口如果使用阿里云等服务器，需要在安全配置中开启5080和1935端口。 启动red5服务1docker run -itd --name red5-p">
+<meta property="og:type" content="article">
+<meta property="og:title" content="利用Docker搭建red5 流媒体播放平台">
+<meta property="og:url" content="http://coolwxb.github.io/2019/12/28/%E5%88%A9%E7%94%A8Docker%E6%90%AD%E5%BB%BAred5-%E6%B5%81%E5%AA%92%E4%BD%93%E6%92%AD%E6%94%BE%E5%B9%B3%E5%8F%B0/index.html">
+<meta property="og:site_name" content="小小程序眼">
+<meta property="og:description" content="拉取red5docker镜像1docker pull mondain&#x2F;red5 配置挂在目录创建目录&#x2F;mnt&#x2F;red5_data&#x2F;webapps，启动docker并将docker中opt&#x2F;red5&#x2F;webapps目录挂载在这里。 开启服务器端口如果使用阿里云等服务器，需要在安全配置中开启5080和1935端口。 启动red5服务1docker run -itd --name red5-p">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://coolwxb.github.io/2019/12/28/%E5%88%A9%E7%94%A8Docker%E6%90%AD%E5%BB%BAred5-%E6%B5%81%E5%AA%92%E4%BD%93%E6%92%AD%E6%94%BE%E5%B9%B3%E5%8F%B0/coolwxb-blog.test.upcdn.net/2019/12/28/15694217863506.jpg">
+<meta property="og:image" content="http://coolwxb.github.io/2019/12/28/%E5%88%A9%E7%94%A8Docker%E6%90%AD%E5%BB%BAred5-%E6%B5%81%E5%AA%92%E4%BD%93%E6%92%AD%E6%94%BE%E5%B9%B3%E5%8F%B0/coolwxb-blog.test.upcdn.net/2019/12/28/15694218569733.jpg">
+<meta property="og:image" content="http://coolwxb.github.io/2019/12/28/%E5%88%A9%E7%94%A8Docker%E6%90%AD%E5%BB%BAred5-%E6%B5%81%E5%AA%92%E4%BD%93%E6%92%AD%E6%94%BE%E5%B9%B3%E5%8F%B0/coolwxb-blog.test.upcdn.net/2019/12/28/15694221817666.jpg">
+<meta property="article:published_time" content="2019-12-28T01:45:29.000Z">
+<meta property="article:modified_time" content="2019-12-28T01:54:53.550Z">
+<meta property="article:author" content="coolwxb">
+<meta property="article:tag" content="其他">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://coolwxb.github.io/2019/12/28/%E5%88%A9%E7%94%A8Docker%E6%90%AD%E5%BB%BAred5-%E6%B5%81%E5%AA%92%E4%BD%93%E6%92%AD%E6%94%BE%E5%B9%B3%E5%8F%B0/coolwxb-blog.test.upcdn.net/2019/12/28/15694217863506.jpg">
+
+
+<link rel="icon" href="/img/avatar.jpg">
+
+<link href="/css/style.css?v=1.0.1" rel="stylesheet">
+
+<link href="/css/hl_theme/atom-light.css?v=1.0.1" rel="stylesheet">
+
+<link href="//cdn.bootcss.com/animate.css/3.5.2/animate.min.css" rel="stylesheet">
+<link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="/js/jquery.autocomplete.min.js?v=1.0.1" ></script>
+
+<script src="//cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+<script>
+    hljs.initHighlightingOnLoad();
+</script>
+
+<script src="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.js"></script>
+
+
+
+<script src="//cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.min.js" ></script>
+
+<script src="/js/iconfont.js?v=1.0.1" ></script>
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<div style="display: none">
+  <input class="theme_disqus_on" value="false">
+  <input class="theme_preload_comment" value="false">
+  <input class="theme_blog_path" value="">
+</div>
+
+<body>
+<aside class="nav">
+    <div class="nav-left">
+        <a href="/" class="avatar_target">
+    <img class="avatar" src="/img/avatar.jpg" />
+</a>
+<div class="author">
+    <span>coolwxb</span>
+</div>
+
+<div class="icon">
+    
+        
+        <a title="github" href="https://github.com/coolwxb" target="_blank">
+            
+                <i class="iconfont icon-github"></i>
+            
+        </a>
+        
+    
+        
+        <a title="jianshu" href="https://www.jianshu.com/u/100a282e4174" target="_blank">
+            
+                <i class="iconfont icon-jianshu"></i>
+            
+        </a>
+        
+    
+        
+        <a title="csdn" href="https://blog.csdn.net/coolwxb" target="_blank">
+            
+                <i class="iconfont icon-csdn"></i>
+            
+        </a>
+        
+    
+        
+        <a title="oschina" href="https://my.oschina.net/coolwxb" target="_blank">
+            
+                <i class="iconfont icon-oschina"></i>
+            
+        </a>
+        
+    
+        
+        <a title="email" href="mailto:23735347@qq.com" target="_blank">
+            
+                <i class="iconfont icon-email"></i>
+            
+        </a>
+        
+    
+        
+        <a title="qq" href="http://wpa.qq.com/msgrd?v=3&uin=23735347&site=qq&menu=yes" target="_blank">
+            
+                <i class="iconfont icon-qq"></i>
+            
+        </a>
+        
+    
+</div>
+
+
+
+
+<ul>
+    <li><div class="all active">全部文章<small>(28)</small></div></li>
+    
+</ul>
+<div class="left-bottom">
+    <div class="menus">
+    
+    
+    
+    
+    </div>
+    <div></div>
+</div>
+<input type="hidden" id="yelog_site_posts_number" value="28">
+
+<div style="display: none">
+    <span id="busuanzi_value_site_uv"></span>
+    <span id="busuanzi_value_site_pv"></span>
+</div>
+
+    </div>
+    <div class="nav-right">
+        <div class="friends-area">
+    <div class="friends-title">
+        友情链接
+        <i class="back-title-list"></i>
+    </div>
+    <div class="friends-content">
+        <ul>
+            
+        </ul>
+    </div>
+</div>
+        <div class="title-list">
+    <form onkeydown="if(event.keyCode==13){return false;}">
+        <input class="search" type="text" placeholder="Search..." autocomplete="off"id="local-search-input" >
+        <i class="cross"></i>
+        <span>
+            <label for="tagswitch">Tags:</label>
+            <input id="tagswitch" type="checkbox" style="display: none" />
+            <i id="tagsWitchIcon"></i>
+        </span>
+    </form>
+    <div class="tags-list">
+    
+    <li class="article-tag-list-item">
+        <a class="color3">杂文</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a class="color4">数据库</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a class="color3">其他</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a class="color2">postgres postgis</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a class="color1">springboot</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a class="color3">基础</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a class="color3">容器</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a class="color5">消息队列</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a class="color4">大数据</a>
+    </li>
+    
+    <div class="clearfix"></div>
+</div>
+
+    
+    <nav id="title-list-nav">
+        
+        <a  class=""
+           href="/2019/12/27/%E6%96%B0%E8%B5%B7%E8%88%AA-%E6%96%B0%E8%B5%B7%E7%82%B9/"
+           data-tag="杂文"
+           data-author="" >
+            <span class="post-title" title="新起航!新起点!">新起航!新起点!</span>
+            <span class="post-date" title="2019-12-27 10:30:31">2019/12/27</span>
+        </a>
+        
+        <a  class=""
+           href="/2019/12/27/PostGresql-%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C/"
+           data-tag="数据库"
+           data-author="" >
+            <span class="post-title" title="PostGresql 常用操作">PostGresql 常用操作</span>
+            <span class="post-date" title="2019-12-27 10:33:22">2019/12/27</span>
+        </a>
+        
+        <a  class=""
+           href="/2019/12/28/Linux-%E6%8C%82%E5%9C%A8%E7%A3%81%E7%9B%98%E5%88%86%E5%8C%BA/"
+           data-tag="其他"
+           data-author="" >
+            <span class="post-title" title="Linux 挂在磁盘分区">Linux 挂在磁盘分区</span>
+            <span class="post-date" title="2019-12-28 09:44:26">2019/12/28</span>
+        </a>
+        
+        <a  class=""
+           href="/2019/12/28/Postgis-%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9D%90%E6%A0%87%E7%B3%BB%E5%81%8F%E7%A7%BB%E8%BD%AC%E6%8D%A2/"
+           data-tag="postgres postgis"
+           data-author="" >
+            <span class="post-title" title="Postgis 数据库坐标系偏移转换">Postgis 数据库坐标系偏移转换</span>
+            <span class="post-date" title="2019-12-28 09:34:34">2019/12/28</span>
+        </a>
+        
+        <a  class=""
+           href="/2019/12/28/%E5%88%A9%E7%94%A8Docker%E6%90%AD%E5%BB%BAred5-%E6%B5%81%E5%AA%92%E4%BD%93%E6%92%AD%E6%94%BE%E5%B9%B3%E5%8F%B0/"
+           data-tag="其他"
+           data-author="" >
+            <span class="post-title" title="利用Docker搭建red5 流媒体播放平台">利用Docker搭建red5 流媒体播放平台</span>
+            <span class="post-date" title="2019-12-28 09:45:29">2019/12/28</span>
+        </a>
+        
+        <a  class=""
+           href="/2019/12/28/AccessControlFilter/"
+           data-tag="springboot"
+           data-author="" >
+            <span class="post-title" title="AccessControlFilter">AccessControlFilter</span>
+            <span class="post-date" title="2019-12-28 10:24:51">2019/12/28</span>
+        </a>
+        
+        <a  class=""
+           href="/2019/12/28/CAS/"
+           data-tag="基础"
+           data-author="" >
+            <span class="post-title" title="CAS">CAS</span>
+            <span class="post-date" title="2019-12-28 10:04:53">2019/12/28</span>
+        </a>
+        
+        <a  class=""
+           href="/2019/12/28/Cacheable-%E4%B8%8D%E8%B5%B0%E7%BC%93%E5%AD%98%E5%8E%9F%E5%9B%A0/"
+           data-tag="springboot"
+           data-author="" >
+            <span class="post-title" title="@Cacheable 不走缓存原因">@Cacheable 不走缓存原因</span>
+            <span class="post-date" title="2019-12-28 10:18:31">2019/12/28</span>
+        </a>
+        
+        <a  class=""
+           href="/2019/12/28/Docker-%E5%AE%B9%E5%99%A8%E6%8C%87%E4%BB%A4/"
+           data-tag="容器"
+           data-author="" >
+            <span class="post-title" title="Docker 容器指令">Docker 容器指令</span>
+            <span class="post-date" title="2019-12-28 10:16:46">2019/12/28</span>
+        </a>
+        
+        <a  class=""
+           href="/2019/12/28/Druid%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90%E9%85%8D%E7%BD%AE%E9%97%AE%E9%A2%98/"
+           data-tag="springboot"
+           data-author="" >
+            <span class="post-title" title="Druid多数据源配置问题">Druid多数据源配置问题</span>
+            <span class="post-date" title="2019-12-28 10:19:00">2019/12/28</span>
+        </a>
+        
+        <a  class=""
+           href="/2019/12/28/JVM/"
+           data-tag="基础"
+           data-author="" >
+            <span class="post-title" title="JVM">JVM</span>
+            <span class="post-date" title="2019-12-28 10:01:05">2019/12/28</span>
+        </a>
+        
+        <a  class=""
+           href="/2019/12/28/Jackson%E5%B1%9E%E6%80%A7%E8%BF%87%E6%BB%A4/"
+           data-tag="springboot"
+           data-author="" >
+            <span class="post-title" title="Jackson属性过滤">Jackson属性过滤</span>
+            <span class="post-date" title="2019-12-28 10:20:05">2019/12/28</span>
+        </a>
+        
+        <a  class=""
+           href="/2019/12/28/Java%E5%86%85%E5%AD%98%E9%AB%98%E5%88%86%E6%9E%90/"
+           data-tag="基础"
+           data-author="" >
+            <span class="post-title" title="Java内存高分析">Java内存高分析</span>
+            <span class="post-date" title="2019-12-28 10:00:07">2019/12/28</span>
+        </a>
+        
+        <a  class=""
+           href="/2019/12/28/Nginx-root-%E5%92%8Calias/"
+           data-tag="基础"
+           data-author="" >
+            <span class="post-title" title="Nginx root 和alias">Nginx root 和alias</span>
+            <span class="post-date" title="2019-12-28 10:13:50">2019/12/28</span>
+        </a>
+        
+        <a  class=""
+           href="/2019/12/28/RabbitMQ%E5%AD%A6%E4%B9%A0/"
+           data-tag="消息队列"
+           data-author="" >
+            <span class="post-title" title="RabbitMQ学习">RabbitMQ学习</span>
+            <span class="post-date" title="2019-12-28 09:58:36">2019/12/28</span>
+        </a>
+        
+        <a  class=""
+           href="/2019/12/28/Redis-%E6%8C%87%E5%AE%9A%E5%BA%8F%E5%88%97%E5%8C%96%E6%96%B9%E5%BC%8F%E6%9C%AA%E6%89%A7%E8%A1%8C%E5%8E%9F%E5%9B%A0/"
+           data-tag="springboot"
+           data-author="" >
+            <span class="post-title" title="Redis 指定序列化方式未执行原因">Redis 指定序列化方式未执行原因</span>
+            <span class="post-date" title="2019-12-28 10:21:29">2019/12/28</span>
+        </a>
+        
+        <a  class=""
+           href="/2019/12/28/RequestContextHolder/"
+           data-tag="springboot"
+           data-author="" >
+            <span class="post-title" title="RequestContextHolder">RequestContextHolder</span>
+            <span class="post-date" title="2019-12-28 10:25:33">2019/12/28</span>
+        </a>
+        
+        <a  class=""
+           href="/2019/12/28/Shiro/"
+           data-tag="springboot"
+           data-author="" >
+            <span class="post-title" title="Shiro">Shiro</span>
+            <span class="post-date" title="2019-12-28 10:22:39">2019/12/28</span>
+        </a>
+        
+        <a  class=""
+           href="/2019/12/28/SpringMVC%E4%BC%A0%E5%80%BC/"
+           data-tag="springboot"
+           data-author="" >
+            <span class="post-title" title="SpringMVC传值">SpringMVC传值</span>
+            <span class="post-date" title="2019-12-28 10:26:16">2019/12/28</span>
+        </a>
+        
+        <a  class=""
+           href="/2019/12/28/Volatile/"
+           data-tag="基础"
+           data-author="" >
+            <span class="post-title" title="Volatile">Volatile</span>
+            <span class="post-date" title="2019-12-28 10:06:42">2019/12/28</span>
+        </a>
+        
+        <a  class=""
+           href="/2019/12/28/%E4%BD%BF%E7%94%A8%E8%85%BE%E8%AE%AF%E4%BA%91%E4%B8%BB%E6%9C%BA%EF%BC%8Cdocker%E6%9E%84%E5%BB%BA%E9%9B%86%E7%BE%A4%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83/"
+           data-tag="大数据"
+           data-author="" >
+            <span class="post-title" title="使用腾讯云主机，docker构建集群测试环境">使用腾讯云主机，docker构建集群测试环境</span>
+            <span class="post-date" title="2019-12-28 09:56:45">2019/12/28</span>
+        </a>
+        
+        <a  class=""
+           href="/2019/12/28/%E5%90%8E%E5%8F%B0%E5%90%AF%E5%8A%A8jar%E6%9C%8D%E5%8A%A1/"
+           data-tag="基础"
+           data-author="" >
+            <span class="post-title" title="后台启动jar服务">后台启动jar服务</span>
+            <span class="post-date" title="2019-12-28 10:15:52">2019/12/28</span>
+        </a>
+        
+        <a  class=""
+           href="/2019/12/28/%E6%95%B0%E6%8D%AE%E5%BA%93%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1%E2%80%94%E2%80%94%E5%8E%86%E5%8F%B2%E4%B8%8E%E7%89%88%E6%9C%AC%E8%AE%BE%E8%AE%A1/"
+           data-tag="基础"
+           data-author="" >
+            <span class="post-title" title="数据库模型设计——历史与版本设计">数据库模型设计——历史与版本设计</span>
+            <span class="post-date" title="2019-12-28 10:17:25">2019/12/28</span>
+        </a>
+        
+        <a  class=""
+           href="/2019/12/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E5%9C%BA%E6%99%AF1/"
+           data-tag="基础"
+           data-author="" >
+            <span class="post-title" title="消息队列场景1">消息队列场景1</span>
+            <span class="post-date" title="2019-12-28 10:11:07">2019/12/28</span>
+        </a>
+        
+        <a  class=""
+           href="/2019/12/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E5%9C%BA%E6%99%AF2/"
+           data-tag="基础"
+           data-author="" >
+            <span class="post-title" title="消息队列场景2">消息队列场景2</span>
+            <span class="post-date" title="2019-12-28 10:12:02">2019/12/28</span>
+        </a>
+        
+        <a  class=""
+           href="/2019/12/28/%E8%AE%B0%E5%BD%95%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%AE%BF%E9%97%AEIP%E5%9C%B0%E5%9D%80/"
+           data-tag="基础"
+           data-author="" >
+            <span class="post-title" title="记录客户端访问IP地址">记录客户端访问IP地址</span>
+            <span class="post-date" title="2019-12-28 10:14:48">2019/12/28</span>
+        </a>
+        
+        <a  class=""
+           href="/2019/12/28/%E9%94%81/"
+           data-tag="基础"
+           data-author="" >
+            <span class="post-title" title="锁">锁</span>
+            <span class="post-date" title="2019-12-28 10:08:24">2019/12/28</span>
+        </a>
+        
+        <a  class=""
+           href="/2019/12/28/%E9%9B%86%E5%90%88%E7%B1%BB%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98/"
+           data-tag="基础"
+           data-author="" >
+            <span class="post-title" title="集合类安全问题">集合类安全问题</span>
+            <span class="post-date" title="2019-12-28 10:10:08">2019/12/28</span>
+        </a>
+        
+    </nav>
+</div>
+    </div>
+    <div class="hide-list">
+        <div class="semicircle">
+            <div class="brackets first"><</div>
+            <div class="brackets">&gt;</div>
+        </div>
+    </div>
+</aside>
+<div class="post">
+    <div class="pjax">
+        <article id="post-消息队列场景2" class="article article-type-post" itemscope itemprop="blogPost">
+    
+        <h1 class="article-title">消息队列场景2</h1>
+    
+    <div class="article-meta">
+        
+        
+        
+        
+        <span class="tag">
+            
+            <a class="color3">基础</a>
+            
+        </span>
+        
+    </div>
+    <div class="article-meta">
+        
+        创建时间:<time class="date" title='更新时间: 2019-12-28 10:12:33'>2019-12-28 10:12</time>
+        
+    </div>
+    <div class="article-meta">
+        
+        
+        <span id="busuanzi_container_page_pv">
+            阅读:<span id="busuanzi_value_page_pv">
+                <span class="count-comment">
+                    <span class="spinner">
+                      <div class="cube1"></div>
+                      <div class="cube2"></div>
+                    </span>
+                </span>
+            </span>
+        </span>
+        
+        
+        <span class="top-comment" title="跳转至评论区">
+            <a href="#comments">
+                评论:<span class="count-comment">
+                    <span class="spinner">
+                      <div class="cube1"></div>
+                      <div class="cube2"></div>
+                    </span>
+                </span>
+            </a>
+        </span>
+        
+    </div>
+    
+    <div class="toc-ref">
+    
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#消息队列（2）"><span class="toc-text">消息队列（2）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#面试官心理分析"><span class="toc-text">面试官心理分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#面试题剖析"><span class="toc-text">面试题剖析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#解耦"><span class="toc-text">解耦</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#异步"><span class="toc-text">异步</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#削峰"><span class="toc-text">削峰</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#消息队列有什么优缺点"><span class="toc-text">消息队列有什么优缺点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Kafka、ActiveMQ、RabbitMQ、RocketMQ-有什么优缺点？"><span class="toc-text">Kafka、ActiveMQ、RabbitMQ、RocketMQ 有什么优缺点？</span></a></li></ol></li></ol>
+    
+<style>
+    .left-col .switch-btn,
+    .left-col .switch-area {
+        display: none;
+    }
+    .toc-level-3 i,
+    .toc-level-3 ol {
+        display: none !important;
+    }
+</style>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="消息队列（2）"><a href="#消息队列（2）" class="headerlink" title="消息队列（2）"></a>消息队列（2）</h1><p>知识出自<strong>中华石杉</strong>,微信公众号石杉的架构笔记（id:shishan100）</p>
+<p>** 为什么使用消息队列？<br>消息队列有什么优点和缺点？<br>Kafka、ActiveMQ、RabbitMQ、RocketMQ 都有什么区别，以及适合哪些场景？</p>
+<h2 id="面试官心理分析"><a href="#面试官心理分析" class="headerlink" title="面试官心理分析"></a><strong>面试官心理分析</strong></h2><p>其实面试官主要是想看看：</p>
+<p><strong>第一</strong>，你知不知道你们系统里为什么要用消息队列这个东西？<br>不少候选人，说自己项目里用了 Redis、MQ，但是其实他并不知道自己为什么要用这个东西。其实说白了，就是为了用而用，或者是别人设计的架构，他从头到尾都没思考过。<br>没有对自己的架构问过为什么的人，一定是平时没有思考的人，面试官对这类候选人印象通常很不好。因为面试官担心你进了团队之后只会木头木脑的干呆活儿，不会自己思考。</p>
+<p><strong>第二</strong>，你既然用了消息队列这个东西，你知不知道用了有什么好处&amp;坏处？<br>你要是没考虑过这个，那你盲目弄个 MQ 进系统里，后面出了问题你是不是就自己溜了给公司留坑？你要是没考虑过引入一个技术可能存在的弊端和风险，面试官把这类候选人招进来了，基本可能就是挖坑型选手。就怕你干 1 年挖一堆坑，自己跳槽了，给公司留下无穷后患。<br><strong>第三</strong>，既然你用了 MQ，可能是某一种 MQ，那么你当时做没做过调研？<br>你别傻乎乎的自己拍脑袋看个人喜好就瞎用了一个 MQ，比如 Kafka，甚至都从没调研过业界流行的 MQ 到底有哪几种。每一个 MQ 的优点和缺点是什么。每一个 MQ 没有绝对的好坏，但是就是看用在哪个场景可以扬长避短，利用其优势，规避其劣势。<br>如果是一个不考虑技术选型的候选人招进了团队，leader 交给他一个任务，去设计个什么系统，他在里面用一些技术，可能都没考虑过选型，最后选的技术可能并不一定合适，一样是留坑。</p>
+<h2 id="面试题剖析"><a href="#面试题剖析" class="headerlink" title="面试题剖析"></a>面试题剖析</h2><p><strong>为什么使用消息队列</strong></p>
+<p>其实就是问问你消息队列都有哪些使用场景，然后你项目里具体是什么场景，说说你在这个场景里用消息队列是什么？</p>
+<p>面试官问你这个问题，期望的一个回答是说，你们公司有个什么<strong>业务场景</strong>，这个业务场景有个什么技术挑战，如果不用 MQ 可能会很麻烦，但是你现在用了 MQ 之后带给了你很多的好处。</p>
+<p>先说一下消息队列常见的使用场景吧，其实场景有很多，但是比较核心的有 3 个：<strong>解耦、异步、削峰</strong>。</p>
+<h3 id="解耦"><a href="#解耦" class="headerlink" title="解耦"></a>解耦</h3><p>看这么个场景。A 系统发送数据到 BCD 三个系统，通过接口调用发送。如果 E 系统也要这个数据呢？那如果 C 系统现在不需要了呢？A 系统负责人几乎崩溃……</p>
+<p><img src="coolwxb-blog.test.upcdn.net/2019/12/28/15649900506982.jpg" alt=""></p>
+<p>在这个场景中，A 系统跟其它各种乱七八糟的系统严重耦合，A 系统产生一条比较关键的数据，很多系统都需要 A 系统将这个数据发送过来。A 系统要时时刻刻考虑 BCDE 四个系统如果挂了该咋办？要不要重发，要不要把消息存起来？头发都白了啊！</p>
+<p>如果使用 MQ，A 系统产生一条数据，发送到 MQ 里面去，哪个系统需要数据自己去 MQ 里面消费。如果新系统需要数据，直接从 MQ 里消费即可；如果某个系统不需要这条数据了，就取消对 MQ 消息的消费即可。这样下来，A 系统压根儿不需要去考虑要给谁发送数据，不需要维护这个代码，也不需要考虑人家是否调用成功、失败超时等情况。<br><img src="coolwxb-blog.test.upcdn.net/2019/12/28/15649900571900.jpg" alt=""></p>
+<p><strong>总结：</strong>通过一个 MQ，Pub/Sub 发布订阅消息这么一个模型，A 系统就跟其它系统彻底解耦了。</p>
+<p><strong>面试技巧：</strong>你需要去考虑一下你负责的系统中是否有类似的场景，就是一个系统或者一个模块，调用了多个系统或者模块，互相之间的调用很复杂，维护起来很麻烦。但是其实这个调用是不需要直接同步调用接口的，如果用 MQ 给它异步化解耦，也是可以的，你就需要去考虑在你的项目里，是不是可以运用这个 MQ 去进行系统的解耦。在简历中体现出来这块东西，用 MQ 作解耦。</p>
+<h3 id="异步"><a href="#异步" class="headerlink" title="异步"></a>异步</h3><p>再来看一个场景，A 系统接收一个请求，需要在自己本地写库，还需要在 BCD 三个系统写库，自己本地写库要 3ms，BCD 三个系统分别写库要 300ms、450ms、200ms。最终请求总延时是 3 + 300 + 450 + 200 = 953ms，接近 1s，用户感觉搞个什么东西，慢死了慢死了。用户通过浏览器发起请求，等待个 1s，这几乎是不可接受的。</p>
+<p><img src="coolwxb-blog.test.upcdn.net/2019/12/28/15649900679016.jpg" alt=""></p>
+<p>一般互联网类的企业，对于用户直接的操作，一般要求是每个请求都必须在 200 ms 以内完成，对用户几乎是无感知的。</p>
+<p>如果使用 MQ，那么 A 系统连续发送 3 条消息到 MQ 队列中，假如耗时 5ms，A 系统从接受一个请求到返回响应给用户，总时长是 3 + 5 = 8ms，对于用户而言，其实感觉上就是点个按钮，8ms 以后就直接返回了，爽！网站做得真好，真快！<br><img src="coolwxb-blog.test.upcdn.net/2019/12/28/15649900778548.jpg" alt=""></p>
+<h3 id="削峰"><a href="#削峰" class="headerlink" title="削峰"></a>削峰</h3><p>每天 0:00 到 12:00，A 系统风平浪静，每秒并发请求数量就 50 个。结果每次一到 12:00 ~ 13:00 ，每秒并发请求数量突然会暴增到 5k+ 条。但是系统是直接基于 MySQL 的，大量的请求涌入 MySQL，每秒钟对 MySQL 执行约 5k 条 SQL。</p>
+<p>一般的 MySQL，扛到每秒 2k 个请求就差不多了，如果每秒请求到 5k 的话，可能就直接把 MySQL 给打死了，导致系统崩溃，用户也就没法再使用系统了。</p>
+<p>但是高峰期一过，到了下午的时候，就成了低峰期，可能也就 1w 的用户同时在网站上操作，每秒中的请求数量可能也就 50 个请求，对整个系统几乎没有任何的压力。</p>
+<p><img src="coolwxb-blog.test.upcdn.net/2019/12/28/15649900858123.jpg" alt=""></p>
+<p>如果使用 MQ，每秒 5k 个请求写入 MQ，A 系统每秒钟最多处理 2k 个请求，因为 MySQL 每秒钟最多处理 2k 个。A 系统从 MQ 中慢慢拉取请求，每秒钟就拉取 2k 个请求，不要超过自己每秒能处理的最大请求数量就 ok，这样下来，哪怕是高峰期的时候，A 系统也绝对不会挂掉。而 MQ 每秒钟 5k 个请求进来，就 2k 个请求出去，结果就导致在中午高峰期（1 个小时），可能有几十万甚至几百万的请求积压在 MQ 中。<br><img src="coolwxb-blog.test.upcdn.net/2019/12/28/15649900956597.jpg" alt=""></p>
+<p>这个短暂的高峰期积压是 ok 的，因为高峰期过了之后，每秒钟就 50 个请求进 MQ，但是 A 系统依然会按照每秒 2k 个请求的速度在处理。所以说，只要高峰期一过，A 系统就会快速将积压的消息给解决掉。</p>
+<h2 id="消息队列有什么优缺点"><a href="#消息队列有什么优缺点" class="headerlink" title="消息队列有什么优缺点"></a>消息队列有什么优缺点</h2><p>优点上面已经说了，就是在特殊场景下有其对应的好处，<strong>解耦、异步、削峰</strong>。</p>
+<p><strong>缺点有以下几个：</strong></p>
+<ul>
+<li>系统可用性降低</li>
+</ul>
+<p>系统引入的外部依赖越多，越容易挂掉。本来你就是 A 系统调用 BCD 三个系统的接口就好了，人 ABCD 四个系统好好的，没啥问题，你偏加个 MQ 进来，万一 MQ 挂了咋整，MQ 一挂，整套系统崩溃的，你不就完了？如何保证消息队列的高可用，可以点击这里查看。</p>
+<ul>
+<li>系统复杂度提高</li>
+</ul>
+<p>硬生生加个 MQ 进来，你怎么保证消息没有重复消费？怎么处理消息丢失的情况？怎么保证消息传递的顺序性？头大头大，问题一大堆，痛苦不已。</p>
+<ul>
+<li>一致性问题</li>
+</ul>
+<p>A 系统处理完了直接返回成功了，人都以为你这个请求就成功了；但是问题是，要是 BCD 三个系统那里，BD 两个系统写库成功了，结果 C 系统写库失败了，咋整？你这数据就不一致了。<br>所以消息队列实际是一种非常复杂的架构，你引入它有很多好处，但是也得针对它带来的坏处做各种额外的技术方案和架构来规避掉，做好之后，你会发现，妈呀，系统复杂度提升了一个数量级，也许是复杂了 10 倍。但是关键时刻，用，还是得用的。</p>
+<h2 id="Kafka、ActiveMQ、RabbitMQ、RocketMQ-有什么优缺点？"><a href="#Kafka、ActiveMQ、RabbitMQ、RocketMQ-有什么优缺点？" class="headerlink" title="Kafka、ActiveMQ、RabbitMQ、RocketMQ 有什么优缺点？"></a>Kafka、ActiveMQ、RabbitMQ、RocketMQ 有什么优缺点？</h2><p><img src="coolwxb-blog.test.upcdn.net/2019/12/28/15649901097630.jpg" alt=""></p>
+<p><strong>综上，各种对比之后，有如下建议：</strong></p>
+<p>一般的业务系统要引入 MQ，最早大家都用 ActiveMQ，但是现在确实大家用的不多了，没经过大规模吞吐量场景的验证，社区也不是很活跃，所以大家还是算了吧，我个人不推荐用这个了；</p>
+<p>后来大家开始用 RabbitMQ，但是确实 erlang 语言阻止了大量的 Java 工程师去深入研究和掌控它，对公司而言，几乎处于不可控的状态，但是确实人家是开源的，比较稳定的支持，活跃度也高；</p>
+<p>不过现在确实越来越多的公司会去用 RocketMQ，确实很不错，毕竟是阿里出品，但社区可能有突然黄掉的风险（目前 RocketMQ 已捐给 Apache，但 GitHub 上的活跃度其实不算高）对自己公司技术实力有绝对自信的，推荐用 RocketMQ，否则回去老老实实用 RabbitMQ 吧，人家有活跃的开源社区，绝对不会黄。</p>
+<p>所以中小型公司，技术实力较为一般，技术挑战不是特别高，用 RabbitMQ 是不错的选择；大型公司，基础架构研发实力较强，用 RocketMQ 是很好的选择。</p>
+<p>如果是大数据领域的实时计算、日志采集等场景，用 Kafka 是业内标准的，绝对没问题，社区活跃度很高，绝对不会黄，何况几乎是全世界这个领域的事实性规范。</p>
+
+      
+       <hr><span style="font-style: italic;color: gray;"> 转载请注明来源，欢迎对文章中的引用来源进行考证，欢迎指出任何有错误或不够清晰的表达。 </span>
+    </div>
+</article>
+
+
+<p>
+    <a  class="dashang" onclick="dashangToggle()">赏</a>
+</p>
+
+
+<div class="article_copyright">
+    <p><span class="copy-title">文章标题:</span>消息队列场景2</p>
+    
+    <p><span class="copy-title">本文作者:</span><a  title="coolwxb">coolwxb</a></p>
+    <p><span class="copy-title">发布时间:</span>2019-12-28, 10:12:02</p>
+    <p><span class="copy-title">最后更新:</span>2019-12-28, 10:12:33</p>
+    <span class="copy-title">原始链接:</span><a class="post-url" href="/2019/12/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E5%9C%BA%E6%99%AF2/" title="消息队列场景2">http://coolwxb.github.io/2019/12/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E5%9C%BA%E6%99%AF2/</a>
+    <p>
+        <span class="copy-title">版权声明:</span><i class="fa fa-creative-commons"></i> <a rel="license noopener" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
+    </p>
+</div>
+
+
+
+    <div id="comments"></div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+<script type="text/javascript">
+    $.getScript('/js/gitalk.js', function () {
+        var gitalk = new Gitalk({
+            clientID: 'f1c7b447ca25bb413cd2',
+            clientSecret: 'bb09b4109933a036a476fe0469dafea861f22499',
+            repo: 'coolwxb.github.io',
+            owner: 'coolwxb',
+            admin: ['coolwxb'],
+            id: decodeURI(location.pathname),
+            distractionFreeMode: 'true',
+            language: 'zh-CN',
+            perPage: parseInt('20',10)
+        })
+        gitalk.render('comments')
+    })
+</script>
+
+
+
+
+    
+
+
+
+
+    </div>
+    <div class="copyright">
+        <p class="footer-entry">©2016-2019 coolwxb</p>
+<p class="footer-entry">Built with <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/yelog/hexo-theme-3-hexo" target="_blank">3-hexo</a> theme</p>
+
+    </div>
+    <div class="full-toc">
+        <button class="full"><span class="min "></span></button>
+<button class="post-toc-menu"><span class="post-toc-menu-icons"></span></button>
+<div class="post-toc"><span class="post-toc-title">目录</span>
+    <div class="post-toc-content">
+
+    </div>
+</div>
+<a class="" id="rocket" ></a>
+
+    </div>
+</div>
+<div class="acParent"></div>
+
+<div class="hide_box" onclick="dashangToggle()"></div>
+<div class="shang_box">
+    <a class="shang_close"  onclick="dashangToggle()">×</a>
+    <div class="shang_tit">
+        <p>喜欢就点赞,疼爱就打赏</p>
+    </div>
+    <div class="shang_payimg">
+        <div class="pay_img">
+            <img src="/img/alipay.png" class="alipay" title="扫码支持">
+            <img src="/img/weixin.png" class="weixin" title="扫码支持">
+        </div>
+    </div>
+    <div class="shang_payselect">
+        <span><label><input type="radio" name="pay" checked value="alipay">支付宝</label></span><span><label><input type="radio" name="pay" value="weixin">微信</label></span>
+    </div>
+</div>
+
+
+</body>
+<script src="/js/jquery.pjax.js?v=1.0.1" ></script>
+
+<script src="/js/script.js?v=1.0.1" ></script>
+<script>
+    var img_resize = 'default';
+    /*作者、标签的自动补全*/
+    $(function () {
+        $('.search').AutoComplete({
+            'data': ['#杂文','#数据库','#其他','#postgres postgis','#springboot','#基础','#容器','#消息队列','#大数据',],
+            'itemHeight': 20,
+            'width': 418
+        }).AutoComplete('show');
+    })
+    function initArticle() {
+        /*渲染对应的表格样式*/
+        
+            $(".post .pjax table").addClass("green_title");
+        
+
+        /*渲染打赏样式*/
+        
+        $("input[name=pay]").on("click", function () {
+            if($("input[name=pay]:checked").val()=="weixin"){
+                $(".shang_box .shang_payimg .pay_img").addClass("weixin_img");
+            } else {
+                $(".shang_box .shang_payimg .pay_img").removeClass("weixin_img");
+            }
+        })
+        
+
+        /*高亮代码块行号*/
+        
+        $('pre code').each(function(){
+            var lines = $(this).text().split('\n').length - 1, widther='';
+            if (lines>99) {
+                widther = 'widther'
+            }
+            var $numbering = $('<ul/>').addClass('pre-numbering ' + widther).attr("unselectable","on");
+            $(this).addClass('has-numbering ' + widther)
+                    .parent()
+                    .append($numbering);
+            for(var i=1;i<=lines;i++){
+                $numbering.append($('<li/>').text(i));
+            }
+        });
+        
+
+        /*访问数量*/
+        
+        $.getScript("//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js");
+        
+
+        /*代码高亮，行号对齐*/
+        $('.pre-numbering').css('line-height',$('.has-numbering').css('line-height'));
+
+        
+        
+    }
+
+    /*打赏页面隐藏与展示*/
+    
+    function dashangToggle() {
+        $(".shang_box").fadeToggle();
+        $(".hide_box").fadeToggle();
+    }
+    
+
+</script>
+
+<!--加入行号的高亮代码块样式-->
+
+<style>
+    pre{
+        position: relative;
+        margin-bottom: 24px;
+        border-radius: 10px;
+        border: 1px solid #e2dede;
+        background: #FFF;
+        overflow: hidden;
+    }
+    code.has-numbering{
+        margin-left: 30px;
+    }
+    code.has-numbering.widther{
+        margin-left: 35px;
+    }
+    .pre-numbering{
+        margin: 0px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 20px;
+        padding: 0.5em 3px 0.7em 5px;
+        border-right: 1px solid #C3CCD0;
+        text-align: right;
+        color: #AAA;
+        background-color: #fafafa;
+    }
+    .pre-numbering.widther {
+        width: 35px;
+    }
+</style>
+
+<!--自定义样式设置-->
+<style>
+    
+    
+    .nav {
+        width: 542px;
+    }
+    .nav.fullscreen {
+        margin-left: -542px;
+    }
+    .nav-left {
+        width: 120px;
+    }
+    
+    
+    @media screen and (max-width: 1468px) {
+        .nav {
+            width: 492px;
+        }
+        .nav.fullscreen {
+            margin-left: -492px;
+        }
+        .nav-left {
+            width: 100px;
+        }
+    }
+    
+    
+    @media screen and (max-width: 1024px) {
+        .nav {
+            width: 492px;
+            margin-left: -492px
+        }
+        .nav.fullscreen {
+            margin-left: 0;
+        }
+        .nav .hide-list.fullscreen {
+            left: 492px
+        }
+    }
+    
+    @media screen and (max-width: 426px) {
+        .nav {
+            width: 100%;
+        }
+        .nav-left {
+            width: 100%;
+        }
+    }
+    
+    
+    .nav-right .title-list nav a .post-title, .nav-right .title-list #local-search-result a .post-title {
+        color: #383636;
+    }
+    
+    
+    .nav-right .title-list nav a .post-date, .nav-right .title-list #local-search-result a .post-date {
+        color: #5e5e5f;
+    }
+    
+    
+    .nav-right nav a.hover, #local-search-result a.hover{
+        background-color: #e2e0e0;
+    }
+    
+    
+
+    /*列表样式*/
+    
+    .post .pjax article .article-entry>ol, .post .pjax article .article-entry>ul, .post .pjax article>ol, .post .pjax article>ul{
+        border: #e2dede solid 1px;
+        border-radius: 10px;
+        padding: 10px 32px 10px 56px;
+    }
+    .post .pjax article .article-entry li>ol, .post .pjax article .article-entry li>ul,.post .pjax article li>ol, .post .pjax article li>ul{
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+    .post .pjax article .article-entry>ol>li, .post .pjax article .article-entry>ul>li,.post .pjax article>ol>li, .post .pjax article>ul>li{
+        margin-bottom: auto;
+        margin-left: auto;
+    }
+    .post .pjax article .article-entry li>ol>li, .post .pjax article .article-entry li>ul>li,.post .pjax article li>ol>li, .post .pjax article li>ul>li{
+        margin-bottom: auto;
+        margin-left: auto;
+    }
+    
+
+    /* 背景图样式 */
+    
+    
+
+
+    /*引用块样式*/
+    
+
+    /*文章列表背景图*/
+    
+    .nav-right:before {
+        content: ' ';
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0.3;
+        background: url("https://i.loli.net/2019/07/22/5d3521411f3f169375.png");
+        background-repeat: no-repeat;
+        background-position: 50% 0;
+        -ms-background-size: cover;
+        -o-background-size: cover;
+        -moz-background-size: cover;
+        -webkit-background-size: cover;
+        background-size: cover;
+    }
+    
+
+    
+</style>
+
+
+
+
+
+
+
+</html>
