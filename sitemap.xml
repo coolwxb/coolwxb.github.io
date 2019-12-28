@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://coolwxb.github.io/2019/12/28/JVM/</loc>
+    
+    <lastmod>2019-12-28T03:02:55.563Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://coolwxb.github.io/2019/12/28/CAS/</loc>
     
     <lastmod>2019-12-28T02:27:47.706Z</lastmod>
@@ -131,13 +138,6 @@
     <loc>http://coolwxb.github.io/2019/12/28/Volatile/</loc>
     
     <lastmod>2019-12-28T02:07:43.964Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://coolwxb.github.io/2019/12/28/JVM/</loc>
-    
-    <lastmod>2019-12-28T02:04:05.251Z</lastmod>
     
   </url>
   
